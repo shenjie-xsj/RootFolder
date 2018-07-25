@@ -9,31 +9,12 @@
 import UIKit
 
 class HomeViewController: UIViewController, UICollectionViewDelegate,UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return musics.count;
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.collectionViewCellIdentifier, for: indexPath)
-        
-        let musicNameLabel = cell.viewWithTag(musicNameTag) as! UILabel
-        let musicTimeLabel = cell.viewWithTag(musicTimeTag) as! UILabel
-        let musicPlayImage = cell.viewWithTag(musicPalyTag) as! UIImageView
-        
-        musicNameLabel.text = musics[indexPath.row].musicName
-        musicTimeLabel.text = musics[indexPath.row].musicTime
-        if (musics[indexPath.row].musicPaly) {
-            musicPlayImage.image = UIImage(named: "Suspend")
-        }
-        else {
-            musicPlayImage.image = UIImage(named: "Play")
-        }
-        
-        return cell
-    }
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var contentTextView: UITextView!
+    @IBOutlet weak var collectionMarginTop: NSLayoutConstraint!
     
+    @IBOutlet weak var widthView: UIView!
     private let musicNameTag = 101
     private let musicTimeTag = 102
     private let musicPalyTag = 103
@@ -41,32 +22,62 @@ class HomeViewController: UIViewController, UICollectionViewDelegate,UICollectio
     
     private let musics = [(musicName:"大鱼",musicTime:"05:13",musicPaly:false),(musicName:"牵丝戏",musicTime:"03:59",musicPaly:false),(musicName:"Star Sky",musicTime:"05:30",musicPaly:false)]
     
-    @IBOutlet weak var topView: UIView!
-    @IBOutlet weak var bottomView: UIView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.backgroundColor = UIColor.clear
-        // Do any additional setup after loading the view.
+        self.setView()
     }
 
+    private func setView() {
+        //设置CollectionView背景色为透明
+        collectionView.backgroundColor = UIColor.clear
+        
+        //获取contentTextView的文本高度
+        let height = getUITextViewContentHeight(textView: contentTextView)
+        //设置文本高度
+        let frame = contentTextView.frame
+        let rect:CGRect = CGRect(origin: frame.origin, size: CGSize(width: frame.width, height: height))
+        contentTextView.frame = rect
+
+        //设置CollectionView的约束的高度
+        collectionMarginTop.constant = height
+    }
+    
+    private func getUITextViewContentHeight(textView:UITextView)->CGFloat {
+        return textView.sizeThatFits(CGSize(width: textView.bounds.width, height: CGFloat(MAXFLOAT))).height
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    private func setView() {
-        
+    //MARK: CollectionView代理方法
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10;
     }
     
-    /*
-    // MARK: - Navigation
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.collectionViewCellIdentifier, for: indexPath)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let frame = cell.frame
+        let rect = CGRect(origin: frame.origin, size: CGSize(width: widthView.frame.width, height: frame.height))
+        cell.bounds = rect
+        
+        let musicNameLabel = cell.viewWithTag(musicNameTag) as! UILabel
+        let musicTimeLabel = cell.viewWithTag(musicTimeTag) as! UILabel
+        let musicPlayImage = cell.viewWithTag(musicPalyTag) as! UIImageView
+
+        musicNameLabel.text = musics[0].musicName
+        musicTimeLabel.text = musics[0].musicTime
+        if (musics[0].musicPaly) {
+            musicPlayImage.image = UIImage(named: "Suspend")
+        }
+        else {
+            musicPlayImage.image = UIImage(named: "Play")
+        }
+
+        return cell
     }
-    */
-
 }
